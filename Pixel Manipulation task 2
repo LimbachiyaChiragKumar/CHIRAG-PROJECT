@@ -1,0 +1,83 @@
+from PIL import Image
+
+def encrypt_image(image_path, key):
+    # Open the image
+    img = Image.open(image_path)
+    width, height = img.size
+    
+    # Convert image to RGB mode (if not already in RGB)
+    img = img.convert("RGB")
+    
+    # Encrypt the image
+    encrypted_pixels = []
+    for y in range(height):
+        row = []
+        for x in range(width):
+            r, g, b = img.getpixel((x, y))
+            # Example of a simple encryption method: swapping channels based on key
+            if key == 1:
+                r, g = g, r
+            elif key == 2:
+                g, b = b, g
+            elif key == 3:
+                r, b = b, r
+            row.append((r, g, b))
+        encrypted_pixels.append(row)
+    
+    # Create a new image with the encrypted pixels
+    encrypted_img = Image.new("RGB", (width, height))
+    for y in range(height):
+        for x in range(width):
+            encrypted_img.putpixel((x, y), encrypted_pixels[y][x])
+    
+    # Save the encrypted image
+    encrypted_img.save("encrypted_image.png")
+    print("Image encrypted successfully.")
+
+def decrypt_image(encrypted_image_path, key):
+    # Open the encrypted image
+    img = Image.open(encrypted_image_path)
+    width, height = img.size
+    
+    # Convert image to RGB mode (if not already in RGB)
+    img = img.convert("RGB")
+    
+    # Decrypt the image (reverse encryption process)
+    decrypted_pixels = []
+    for y in range(height):
+        row = []
+        for x in range(width):
+            r, g, b = img.getpixel((x, y))
+            # Example of decryption for the chosen encryption method
+            if key == 1:
+                g, r = r, g
+            elif key == 2:
+                b, g = g, b
+            elif key == 3:
+                b, r = r, b
+            row.append((r, g, b))
+        decrypted_pixels.append(row)
+    
+    # Create a new image with the decrypted pixels
+    decrypted_img = Image.new("RGB", (width, height))
+    for y in range(height):
+        for x in range(width):
+            decrypted_img.putpixel((x, y), decrypted_pixels[y][x])
+    
+    # Save the decrypted image
+    decrypted_img.save("decrypted_image.png")
+    print("Image decrypted successfully.")
+
+def main():
+    # Example usage
+    image_path = "example_image.png"
+    key = 2  # Change the key to alter encryption method (1, 2, or 3 for this example)
+
+    # Encrypt the image
+    encrypt_image(image_path, key)
+
+    # Decrypt the image (assuming we have the encrypted_image.png from the encryption step)
+    decrypt_image("encrypted_image.png", key)
+
+if __name__ == "__main__":
+    main()
