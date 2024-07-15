@@ -1,0 +1,25 @@
+import scapy.all as scapy
+
+def packet_callback(packet):
+    if packet.haslayer(scapy.IP):
+        ip_src = packet[scapy.IP].src
+        ip_dst = packet[scapy.IP].dst
+        protocol = packet[scapy.IP].proto
+        
+        print(f"Source IP: {ip_src} --> Destination IP: {ip_dst}")
+        print(f"Protocol: {protocol}")
+
+        if packet.haslayer(scapy.Raw):
+            payload = packet[scapy.Raw].load
+            print(f"Payload: {payload.hex()}")  # Print payload in hexadecimal format
+        print("")
+
+def main():
+    print("Starting packet sniffer... Press Ctrl+C to stop.")
+
+    # Sniff packets and process each packet using packet_callback
+    scapy.sniff(prn=packet_callback, store=False)
+
+if __name__ == "__main__":
+    main()
+
